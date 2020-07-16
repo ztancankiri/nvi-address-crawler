@@ -1,0 +1,16 @@
+{
+	"name": "nvi-parser",
+	"version": "1.0.0",
+	"description": "",
+	"main": "app.js",
+	"scripts": {
+		"start": "nodemon app.js"
+	},
+	"author": "Ztan",
+	"license": "ISC",
+	"dependencies": {
+		"axios": "^0.19.2",
+		"cheerio": "^1.0.0-rc.3",
+		"nodemon": "^2.0.4"
+	}
+}
