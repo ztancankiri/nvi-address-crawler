@@ -4,9 +4,15 @@ const cheerio = require('cheerio');
 async function getTokens() {
     const response = await axios.get('https://adres.nvi.gov.tr/VatandasIslemleri/AdresSorgu');
     const $ = cheerio.load(response.data);
+
     const headerToken = $('input[name="__RequestVerificationToken"]').attr('value');
 
-    let cookies = response.headers['set-cookie'];
+    if (!headerToken) {
+        console.log('Header Token is not found!');
+        return null;
+    }
+
+    const cookies = response.headers['set-cookie'];
     let cookie = null;
 
     for (let i = 0; i < cookies.length; i++) {
@@ -28,7 +34,7 @@ async function getTokens() {
 }
 
 async function getIller(headerToken, cookieToken) {
-    const il_response = await axios.post('https://adres.nvi.gov.tr/Harita/ilListesi', '', {
+    const response = await axios.post('https://adres.nvi.gov.tr/Harita/ilListesi', '', {
         headers: {
             "X-Requested-With": "XMLHttpRequest",
             "__RequestVerificationToken": headerToken,
@@ -37,11 +43,11 @@ async function getIller(headerToken, cookieToken) {
         }
     });
 
-    return il_response.data;
+    return response.data;
 }
 
 async function getIlceler(headerToken, cookieToken, ilKimlikNo) {
-    const ilce_response = await axios.post('https://adres.nvi.gov.tr/Harita/ilceListesi', 'ilKimlikNo=' + ilKimlikNo, {
+    const response = await axios.post('https://adres.nvi.gov.tr/Harita/ilceListesi', `ilKimlikNo=${ilKimlikNo}`, {
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
             "X-Requested-With": "XMLHttpRequest",
@@ -51,11 +57,11 @@ async function getIlceler(headerToken, cookieToken, ilKimlikNo) {
         }
     });
 
-    return ilce_response.data;
+    return response.data;
 }
 
 async function getMahalleler(headerToken, cookieToken, ilceKimlikNo) {
-    const ilce_response = await axios.post('https://adres.nvi.gov.tr/Harita/mahalleKoyBaglisiListesi', 'ilceKimlikNo=' + ilceKimlikNo, {
+    const response = await axios.post('https://adres.nvi.gov.tr/Harita/mahalleKoyBaglisiListesi', `ilceKimlikNo=${ilceKimlikNo}`, {
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
             "X-Requested-With": "XMLHttpRequest",
@@ -65,11 +71,11 @@ async function getMahalleler(headerToken, cookieToken, ilceKimlikNo) {
         }
     });
 
-    return ilce_response.data;
+    return response.data;
 }
 
 async function getSokaklar(headerToken, cookieToken, mahalleKoyBaglisiKimlikNo) {
-    const ilce_response = await axios.post('https://adres.nvi.gov.tr/Harita/yolListesi', 'mahalleKoyBaglisiKimlikNo=' + mahalleKoyBaglisiKimlikNo, {
+    const response = await axios.post('https://adres.nvi.gov.tr/Harita/yolListesi', `mahalleKoyBaglisiKimlikNo=${mahalleKoyBaglisiKimlikNo}`, {
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
             "X-Requested-With": "XMLHttpRequest",
@@ -79,7 +85,7 @@ async function getSokaklar(headerToken, cookieToken, mahalleKoyBaglisiKimlikNo) 
         }
     });
 
-    return ilce_response.data;
+    return response.data;
 }
 
 async function main() {
